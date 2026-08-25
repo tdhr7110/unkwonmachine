@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#070b12" />
+  <title>UNKNOWN MACHINE</title>
+  <style>
+    :root{color-scheme:dark;--bg:#070b12;--panel:#0d1420;--panel2:#111b2a;--line:#24364d;--text:#e8f1ff;--muted:#8294aa;--accent:#8ff0d1;--danger:#ff7c89;--warn:#ffd37a;--blue:#8bc8ff}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% -10%,#14243a 0,#070b12 42%);color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;min-height:100vh}
+    button,input{font:inherit} button{touch-action:manipulation}.wrap{width:min(920px,100%);margin:auto;padding:18px 14px 56px}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:16px}.brand{font-size:clamp(24px,6vw,42px);font-weight:900;letter-spacing:.12em}.sub{color:var(--muted);font-size:12px;margin-top:5px}.badge{border:1px solid var(--line);background:#0a1019;padding:8px 10px;border-radius:999px;font-size:11px;color:var(--accent);white-space:nowrap}
+    .panel{background:linear-gradient(180deg,rgba(17,27,42,.94),rgba(11,17,27,.96));border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0;box-shadow:0 12px 40px rgba(0,0,0,.22)}.title{font-weight:800;letter-spacing:.08em;margin-bottom:10px}.muted{color:var(--muted);font-size:12px;line-height:1.55}.row{display:flex;gap:10px;flex-wrap:wrap}.grow{flex:1 1 220px}.input{width:100%;background:#080e17;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px;outline:none}.input:focus{border-color:#5278a3}.btn{border:1px solid #38516f;background:#132237;color:var(--text);border-radius:12px;padding:12px 14px;font-weight:800;cursor:pointer}.btn:hover{filter:brightness(1.12)}.btn:disabled{opacity:.38;cursor:not-allowed}.btn.primary{background:#12382f;border-color:#2f866c;color:#baffeb}.btn.danger{background:#3a1720;border-color:#843645;color:#ffd7dc}.btn.ghost{background:#0a1019}.code{font-size:30px;letter-spacing:.2em;font-weight:900;color:var(--accent);padding:8px 0}.hidden{display:none!important}
+    .players{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.player{border:1px solid var(--line);background:#09111c;border-radius:12px;padding:10px;min-height:70px}.player.me{border-color:#5c9d88}.player.ready{box-shadow:inset 0 0 0 1px #2e725f}.pnum{font-size:10px;color:var(--muted)}.pname{font-weight:800;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pstate{font-size:10px;margin-top:5px;color:var(--muted)}
+    .objective{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.metric{background:#09111c;border:1px solid var(--line);padding:10px;border-radius:12px}.metric .label{font-size:10px;color:var(--muted)}.metric .value{font-size:22px;font-weight:900;margin:5px 0}.bar{height:7px;background:#172233;border-radius:99px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#4871a4,#8ff0d1);width:0%}.target{font-size:9px;color:#6f849c;margin-top:5px}.metric.ok{border-color:#397a67}.metric.bad{border-color:#7f3742}.metric.bad .fill{background:linear-gradient(90deg,#973444,#ff7c89)}
+    .turnline{display:flex;justify-content:space-between;gap:10px;align-items:center}.turn{font-size:20px;font-weight:900}.status{color:var(--warn);font-size:12px;text-align:right}.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.control{min-height:76px;border:1px solid #324a67;background:#0c1725;border-radius:13px;color:var(--text);font-weight:900;cursor:pointer;padding:10px}.control small{display:block;color:var(--muted);font-size:9px;margin-top:6px;font-weight:500}.control.selected{border-color:var(--accent);background:#103027}.control.start{border-color:#75612f;background:#2a2210;color:#ffe5a5}.control:disabled{opacity:.35;cursor:not-allowed}
+    .machine{position:relative;border:1px solid #2b4058;background:linear-gradient(180deg,#0a1018,#080d14);border-radius:18px;padding:16px;overflow:hidden}.machine:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 42px,rgba(255,255,255,.018) 43px 44px);pointer-events:none}.screen{position:relative;border:1px solid #1e594c;background:#07150f;border-radius:10px;padding:12px;color:#9ff5d7;text-shadow:0 0 10px rgba(143,240,209,.35);min-height:54px;font-size:12px;line-height:1.5}.lever{display:inline-block;margin-left:8px;padding:3px 7px;border-radius:6px;border:1px solid #40526a;color:#a9bbcf}.lever.on{color:#ffe3a2;border-color:#836b37;background:#2d2512}
+    .log{max-height:260px;overflow:auto;background:#070c13;border:1px solid #1c2b3e;border-radius:12px;padding:8px}.logitem{padding:8px 6px;border-bottom:1px dashed #1b2b3f;font-size:11px;line-height:1.5}.logitem:last-child{border-bottom:0}.delta{color:var(--blue)}.good{color:var(--accent)}.dangerText{color:var(--danger)}.warn{color:var(--warn)}
+    .result{text-align:center;padding:24px 12px}.result h2{font-size:30px;margin:0 0 8px}.result.win h2{color:var(--accent)}.result.lose h2{color:var(--danger)}
+    .footer{color:#55677c;font-size:10px;line-height:1.55;margin-top:18px}
+    @media(max-width:620px){.players,.objective,.controls{grid-template-columns:repeat(2,1fr)}.brand{letter-spacing:.07em}.top{align-items:center}.control{min-height:70px}.metric .value{font-size:19px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><div class="brand">UNKNOWN MACHINE</div><div class="sub">4 PLAYER CO-OP EXPERIMENT / MVP</div></div>
+    <div id="netBadge" class="badge">OFFLINE</div>
+  </div>
+
+  <section id="home" class="panel">
+    <div class="title">ENTER THE LAB</div>
+    <div class="muted">説明書のない機械を4人で実験し、内部法則を推理して起動してください。各ターン、全員が1操作だけ選びます。</div>
+    <div class="row" style="margin-top:14px">
+      <div class="grow"><input id="nameInput" class="input" maxlength="14" placeholder="研究員名" /></div>
+      <button id="createBtn" class="btn primary">ルーム作成</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="grow"><input id="codeInput" class="input" maxlength="6" placeholder="6桁ルームコード" /></div>
+      <button id="joinBtn" class="btn">参加</button>
+    </div>
+    <div id="homeMsg" class="muted" style="margin-top:10px"></div>
+  </section>
+
+  <section id="lobby" class="panel hidden">
+    <div class="title">LAB ROOM</div>
+    <div class="muted">ルームコード</div><div id="roomCode" class="code">------</div>
+    <div id="players" class="players"></div>
+    <div id="hostTools" class="row hidden" style="margin-top:12px">
+      <button id="startBtn" class="btn primary">4人で実験開始</button>
+      <button id="botBtn" class="btn ghost">空席をBOTで埋めて開始</button>
+    </div>
+    <div id="lobbyMsg" class="muted" style="margin-top:10px">接続待機中…</div>
+  </section>
+
+  <main id="game" class="hidden">
+    <section class="machine">
+      <div class="screen" id="screenText">SYSTEM: STANDBY</div>
+      <div class="objective" style="margin-top:12px">
+        <div id="mPower" class="metric"><div class="label">POWER</div><div class="value">0%</div><div class="bar"><div class="fill"></div></div><div class="target">TARGET ≥ 90%</div></div>
+        <div id="mTemp" class="metric"><div class="label">TEMP</div><div class="value">0°C</div><div class="bar"><div class="fill"></div></div><div class="target">TARGET 40–60°C</div></div>
+        <div id="mPressure" class="metric"><div class="label">PRESSURE</div><div class="value">0</div><div class="bar"><div class="fill"></div></div><div class="target">TARGET 30–60</div></div>
+        <div id="mStability" class="metric"><div class="label">STABILITY</div><div class="value">0%</div><div class="bar"><div class="fill"></div></div><div class="target">TARGET ≥ 50%</div></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="turnline"><div id="turnText" class="turn">TURN 1 / 12</div><div id="gameStatus" class="status">入力待ち</div></div>
+      <div id="gamePlayers" class="players" style="margin-top:10px"></div>
+    </section>
+
+    <section class="panel">
+      <div class="title">SELECT ONE CONTROL</div>
+      <div class="muted" style="margin-bottom:10px">効果は説明されません。同じ操作でも機械の状態やレバー位置によって挙動が変わることがあります。</div>
+      <div id="controls" class="controls"></div>
+      <div class="row" style="margin-top:10px">
+        <button id="submitBtn" class="btn primary grow" disabled>この操作で決定</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="title">OBSERVATION LOG</div>
+      <div id="log" class="log"></div>
+    </section>
+
+    <section id="result" class="panel hidden"></section>
+    <section id="gameHostTools" class="panel hidden"><button id="rematchBtn" class="btn">同じメンバーで再実験</button></section>
+  </main>
+
+  <div class="footer">MVP仕様：Supabase Realtime Broadcastを利用した友人向けテスト。ゲーム状態はホスト端末が管理し、永続保存・認証・切断復帰・不正対策は未実装です。</div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.112.4';
+
+const SUPABASE_URL = 'https://obnulnyfwzewzxgeycnn.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_6eunfSW5fXFpUyTKv-B2Jw_FGDA9dRN';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = (s) => document.querySelector(s);
+const clientId = crypto.randomUUID();
+const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const ACTIONS = [
+  ['RED','RED BUTTON','赤い押しボタン'],
+  ['BLUE','BLUE BUTTON','青い押しボタン'],
+  ['COIL','COIL','発光コイル'],
+  ['DIAL','DIAL','目盛りのないダイヤル'],
+  ['VALVE','VALVE','大型バルブ'],
+  ['VENT','VENT','排気スイッチ'],
+  ['LEVER','LEVER','二位置レバー'],
+  ['START','START','起動試行']
+];
+
+let channel = null;
+let room = '';
+let isHost = false;
+let mySeat = null;
+let selectedAction = null;
+let submitted = false;
+let players = [];
+let hostState = null;
+let hostRules = null;
+let publicState = null;
+
+function randomCode(){let s='';for(let i=0;i<6;i++)s+=chars[Math.floor(Math.random()*chars.length)];return s;}
+function myName(){return ($('#nameInput').value.trim() || `研究員-${clientId.slice(0,4)}`).slice(0,14);}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function setNet(t,ok=true){$('#netBadge').textContent=t;$('#netBadge').style.color=ok?'var(--accent)':'var(--danger)';}
+function msg(el,t,bad=false){$(el).textContent=t;$(el).style.color=bad?'var(--danger)':'var(--muted)';}
+function clamp(v,min=0,max=100){return Math.max(min,Math.min(max,Math.round(v)));}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function renderControls(){
+  $('#controls').innerHTML=ACTIONS.map(([id,label,desc])=>`<button class="control ${id==='START'?'start':''}" data-action="${id}">${label}<small>${desc}</small></button>`).join('');
+  $('#controls').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    if(submitted || !publicState || publicState.phase!=='playing') return;
+    selectedAction=b.dataset.action;
+    $('#controls').querySelectorAll('button').forEach(x=>x.classList.toggle('selected',x===b));
+    $('#submitBtn').disabled=false;
+  });
+}
+renderControls();
+
+function playerCard(p, ready=false){
+  const me=p.id===clientId;
+  return `<div class="player ${me?'me':''} ${ready?'ready':''}"><div class="pnum">SEAT ${p.seat+1}${p.bot?' / BOT':''}${p.host?' / HOST':''}</div><div class="pname">${esc(p.name)}</div><div class="pstate">${ready?'操作入力済':'WAITING'}</div></div>`;
+}
+function renderLobby(){
+  $('#players').innerHTML=[0,1,2,3].map(seat=>{
+    const p=players.find(x=>x.seat===seat);
+    return p?playerCard(p,false):`<div class="player"><div class="pnum">SEAT ${seat+1}</div><div class="pname" style="color:#52657a">EMPTY</div><div class="pstate">参加待ち</div></div>`;
+  }).join('');
+  $('#hostTools').classList.toggle('hidden',!isHost);
+  if(isHost){
+    $('#startBtn').disabled=players.filter(p=>!p.bot).length!==4;
+    msg('#lobbyMsg',`${players.filter(p=>!p.bot).length}/4 人接続中`);
+  }
+}
+function renderGame(){
+  if(!publicState)return;
+  $('#home').classList.add('hidden');$('#lobby').classList.add('hidden');$('#game').classList.remove('hidden');
+  const m=publicState.machine;
+  setMetric('#mPower',m.power,'%',m.power>=90);
+  setMetric('#mTemp',m.temp,'°C',m.temp>=40&&m.temp<=60,m.temp<=5||m.temp>=95);
+  setMetric('#mPressure',m.pressure,'',m.pressure>=30&&m.pressure<=60,m.pressure>=90);
+  setMetric('#mStability',m.stability,'%',m.stability>=50,m.stability<=20);
+  $('#screenText').innerHTML=`SYSTEM: ${publicState.phase==='playing'?'ACTIVE':publicState.phase.toUpperCase()} &nbsp;|&nbsp; LEVER <span class="lever ${m.lever?'on':''}">${m.lever?'ON':'OFF'}</span>`;
+  $('#turnText').textContent=`TURN ${publicState.turn} / ${publicState.maxTurns}`;
+  const ready=new Set(publicState.readySeats||[]);
+  $('#gamePlayers').innerHTML=[0,1,2,3].map(seat=>{
+    const p=publicState.players.find(x=>x.seat===seat);
+    return p?playerCard(p,ready.has(seat)):'';
+  }).join('');
+  const humanCount=publicState.players.filter(p=>!p.bot).length;
+  $('#gameStatus').textContent=publicState.phase==='playing'?`${ready.size}/4 入力済 / HUMAN ${humanCount}`:(publicState.phase==='win'?'起動成功':'実験終了');
+  $('#log').innerHTML=(publicState.logs||[]).slice().reverse().map(l=>`<div class="logitem">${l}</div>`).join('') || '<div class="logitem">まだ観測データがありません。</div>';
+  const active=publicState.phase==='playing'&&!submitted;
+  $('#controls').querySelectorAll('button').forEach(b=>b.disabled=!active);
+  $('#submitBtn').disabled=!active||!selectedAction;
+  $('#result').classList.toggle('hidden',publicState.phase==='playing');
+  $('#gameHostTools').classList.toggle('hidden',!isHost || publicState.phase==='playing');
+  if(publicState.phase!=='playing'){
+    const win=publicState.phase==='win';
+    $('#result').className=`panel result ${win?'win':'lose'}`;
+    $('#result').innerHTML=`<h2>${win?'MACHINE ONLINE':'EXPERIMENT FAILED'}</h2><div class="muted">${esc(publicState.resultReason||'')}</div>`;
+  }
+}
+function setMetric(sel,v,suffix,ok,bad=false){
+  const el=$(sel);el.querySelector('.value').textContent=`${v}${suffix}`;el.querySelector('.fill').style.width=`${clamp(v)}%`;el.classList.toggle('ok',!!ok);el.classList.toggle('bad',!!bad);
+}
+
+async function send(event,payload={}){
+  if(!channel)return;
+  return channel.send({type:'broadcast',event,payload:{...payload,senderId:clientId}});
+}
+function wireChannel(ch){
+  ch.on('broadcast',{event:'join_request'},({payload})=>{if(isHost)hostJoin(payload);});
+  ch.on('broadcast',{event:'join_accept'},({payload})=>{if(payload.targetId===clientId){mySeat=payload.seat;players=payload.players;showLobby();}});
+  ch.on('broadcast',{event:'room_full'},({payload})=>{if(payload.targetId===clientId)msg('#homeMsg','このルームは満員です。',true);});
+  ch.on('broadcast',{event:'lobby_state'},({payload})=>{if(!isHost){players=payload.players||players;renderLobby();}});
+  ch.on('broadcast',{event:'game_state'},({payload})=>{if(!isHost)receiveState(payload.state);});
+  ch.on('broadcast',{event:'action_submit'},({payload})=>{if(isHost)hostReceiveAction(payload);});
+  ch.on('broadcast',{event:'sync_request'},({payload})=>{if(isHost)hostSync(payload.senderId);});
+  ch.on('broadcast',{event:'host_left'},()=>{if(!isHost){setNet('HOST LOST',false);$('#gameStatus').textContent='ホスト切断';}});
+  return ch;
+}
+async function connect(code){
+  if(channel)await supabase.removeChannel(channel);
+  room=code.toUpperCase();
+  channel=wireChannel(supabase.channel(`unknown-machine-${room}`,{config:{broadcast:{ack:true}}}));
+  return new Promise((resolve,reject)=>{
+    let done=false;
+    channel.subscribe((status)=>{
+      if(status==='SUBSCRIBED'&&!done){done=true;setNet('REALTIME ONLINE');resolve();}
+      if((status==='CHANNEL_ERROR'||status==='TIMED_OUT')&&!done){done=true;setNet('CONNECTION ERROR',false);reject(new Error(status));}
+    });
+    setTimeout(()=>{if(!done){done=true;reject(new Error('timeout'));}},10000);
+  });
+}
+function showLobby(){
+  $('#home').classList.add('hidden');$('#lobby').classList.remove('hidden');$('#game').classList.add('hidden');$('#roomCode').textContent=room;renderLobby();
+}
+
+$('#createBtn').onclick=async()=>{
+  $('#createBtn').disabled=true;msg('#homeMsg','ルーム作成中…');
+  try{
+    isHost=true;mySeat=0;room=randomCode();await connect(room);
+    players=[{id:clientId,name:myName(),seat:0,host:true,bot:false}];showLobby();
+    msg('#lobbyMsg','ルームを作成しました。コードを共有してください。');
+  }catch(e){isHost=false;msg('#homeMsg','接続に失敗しました。Supabase Realtime設定を確認してください。',true);}
+  $('#createBtn').disabled=false;
+};
+$('#joinBtn').onclick=async()=>{
+  const code=$('#codeInput').value.trim().toUpperCase();if(code.length!==6){msg('#homeMsg','6桁のルームコードを入力してください。',true);return;}
+  $('#joinBtn').disabled=true;msg('#homeMsg','参加中…');
+  try{
+    isHost=false;await connect(code);await send('join_request',{name:myName()});
+    await sleep(700);await send('join_request',{name:myName()});
+    await sleep(700);await send('sync_request',{});
+  }catch(e){msg('#homeMsg','接続に失敗しました。',true);}
+  $('#joinBtn').disabled=false;
+};
+
+function hostJoin(payload){
+  if(!payload?.senderId||payload.senderId===clientId)return;
+  const existing=players.find(p=>p.id===payload.senderId);
+  if(existing){send('join_accept',{targetId:payload.senderId,seat:existing.seat,players});return;}
+  if(hostState?.phase==='playing'||players.filter(p=>!p.bot).length>=4){send('room_full',{targetId:payload.senderId});return;}
+  const used=new Set(players.map(p=>p.seat));let seat=[0,1,2,3].find(s=>!used.has(s));
+  if(seat==null){send('room_full',{targetId:payload.senderId});return;}
+  players.push({id:payload.senderId,name:(payload.name||`研究員-${seat+1}`).slice(0,14),seat,host:false,bot:false});
+  players.sort((a,b)=>a.seat-b.seat);send('join_accept',{targetId:payload.senderId,seat,players});broadcastLobby();renderLobby();
+}
+function broadcastLobby(){send('lobby_state',{players});}
+function hostSync(targetId){
+  if(hostState){send('game_state',{targetId,state:publicStateFromHost()});}
+  else send('lobby_state',{targetId,players});
+}
+
+$('#startBtn').onclick=()=>startExperiment(false);
+$('#botBtn').onclick=()=>startExperiment(true);
+$('#rematchBtn').onclick=()=>startExperiment(players.some(p=>p.bot));
+
+function seedRules(){
+  const effects=[
+    {name:'THERMAL+',fn:(m)=>{m.temp+=18;}},
+    {name:'THERMAL-',fn:(m)=>{m.temp-=16;}},
+    {name:'CHARGE',fn:(m)=>{m.power+=m.lever?34:22;m.temp+=m.lever?8:3;m.stability-=m.lever?7:1;}},
+    {name:'VENT',fn:(m)=>{m.pressure-=22;m.temp-=4;m.stability-=2;}},
+    {name:'COMPRESS',fn:(m)=>{m.pressure+=18;m.power+=10;m.stability-=3;}},
+    {name:'STABILIZE',fn:(m)=>{m.stability+=16;m.power-=7;m.pressure+=3;}}
+  ];
+  for(let i=effects.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[effects[i],effects[j]]=[effects[j],effects[i]];}
+  return {map:{RED:effects[0],BLUE:effects[1],COIL:effects[2],DIAL:effects[3],VALVE:effects[4],VENT:effects[5]}};
+}
+function freshMachine(){return {power:Math.floor(Math.random()*16)+5,temp:Math.floor(Math.random()*16)+20,pressure:Math.floor(Math.random()*21)+20,stability:Math.floor(Math.random()*11)+88,lever:false};}
+function startExperiment(fillBots){
+  if(!isHost)return;
+  players=players.filter(p=>!p.bot);
+  if(fillBots){
+    const used=new Set(players.map(p=>p.seat));
+    for(const seat of [0,1,2,3])if(!used.has(seat))players.push({id:`bot-${seat}-${crypto.randomUUID()}`,name:`BOT-${seat+1}`,seat,host:false,bot:true});
+  }
+  if(players.length!==4){msg('#lobbyMsg','4人揃ってから開始してください。',true);return;}
+  players.sort((a,b)=>a.seat-b.seat);hostRules=seedRules();
+  hostState={phase:'playing',turn:1,maxTurns:12,machine:freshMachine(),pending:{},players:structuredClone(players),logs:[`<span class="good">[BOOT]</span> 未知機械との接続を開始。内部マニュアルは存在しません。`],resultReason:''};
+  submitted=false;selectedAction=null;publicState=publicStateFromHost();renderGame();broadcastState();
+}
+function publicStateFromHost(){
+  return {phase:hostState.phase,turn:hostState.turn,maxTurns:hostState.maxTurns,machine:structuredClone(hostState.machine),players:structuredClone(hostState.players),readySeats:Object.keys(hostState.pending).map(Number),logs:hostState.logs.slice(-40),resultReason:hostState.resultReason};
+}
+function broadcastState(){publicState=publicStateFromHost();send('game_state',{state:publicState});renderGame();}
+function receiveState(state){
+  if(state?.targetId&&state.targetId!==clientId)return;
+  const oldTurn=publicState?.turn;publicState=state;
+  if(oldTurn!==state.turn || state.phase!=='playing'){submitted=false;selectedAction=null;$('#controls').querySelectorAll('button').forEach(b=>b.classList.remove('selected'));}
+  if(mySeat!=null && (state.readySeats||[]).includes(mySeat))submitted=true;
+  players=state.players||players;renderGame();
+}
+
+$('#submitBtn').onclick=async()=>{
+  if(!selectedAction||submitted||!publicState||publicState.phase!=='playing')return;
+  submitted=true;$('#submitBtn').disabled=true;
+  if(isHost)hostReceiveAction({senderId:clientId,action:selectedAction,seat:mySeat});
+  else await send('action_submit',{action:selectedAction,seat:mySeat});
+  renderGame();
+};
+function hostReceiveAction(payload){
+  if(!hostState||hostState.phase!=='playing')return;
+  const p=hostState.players.find(x=>x.id===payload.senderId&&!x.bot);if(!p)return;
+  if(hostState.pending[p.seat])return;
+  if(!ACTIONS.some(a=>a[0]===payload.action))return;
+  hostState.pending[p.seat]={action:payload.action,name:p.name};
+  maybeResolve();broadcastState();
+}
+function botAction(){
+  const m=hostState.machine;
+  if(m.power>=90&&m.temp>=40&&m.temp<=60&&m.pressure>=30&&m.pressure<=60&&m.stability>=50&&Math.random()<.55)return 'START';
+  const pool=['RED','BLUE','COIL','DIAL','VALVE','VENT','LEVER'];return pool[Math.floor(Math.random()*pool.length)];
+}
+function maybeResolve(){
+  const humans=hostState.players.filter(p=>!p.bot);
+  if(humans.some(p=>!hostState.pending[p.seat]))return;
+  hostState.players.filter(p=>p.bot).forEach(p=>{if(!hostState.pending[p.seat])hostState.pending[p.seat]={action:botAction(),name:p.name};});
+  resolveTurn();
+}
+function snapshot(m){return {power:m.power,temp:m.temp,pressure:m.pressure,stability:m.stability,lever:m.lever};}
+function diff(before,after){
+  const parts=[];for(const [k,label] of [['power','PWR'],['temp','TEMP'],['pressure','PRS'],['stability','STB']]){const d=after[k]-before[k];if(d)parts.push(`${label} ${d>0?'+':''}${d}`);}if(before.lever!==after.lever)parts.push(`LEVER ${after.lever?'ON':'OFF'}`);return parts.join(' / ')||'変化なし';
+}
+function applyCore(action){
+  const m=hostState.machine;const before=snapshot(m);
+  if(action==='LEVER')m.lever=!m.lever;
+  else hostRules.map[action].fn(m);
+  if(m.pressure>75){m.stability-=5;if(m.lever)m.temp+=3;}
+  if(m.temp>75)m.stability-=4;
+  m.power=clamp(m.power);m.temp=clamp(m.temp,-20,120);m.pressure=clamp(m.pressure,-20,120);m.stability=clamp(m.stability);
+  return diff(before,m);
+}
+function inTarget(m){return m.power>=90&&m.temp>=40&&m.temp<=60&&m.pressure>=30&&m.pressure<=60&&m.stability>=50;}
+function checkFailure(){
+  const m=hostState.machine;
+  if(m.pressure>=100){endGame(false,'圧力が限界値に到達し、機械が爆発しました。');return true;}
+  if(m.temp<=0||m.temp>=100){endGame(false,'温度が安全領域を逸脱し、緊急停止しました。');return true;}
+  if(m.stability<=0){endGame(false,'安定度が0になり、機械構造が崩壊しました。');return true;}
+  return false;
+}
+function resolveTurn(){
+  if(hostState.phase!=='playing')return;
+  const entries=Object.entries(hostState.pending).map(([seat,v])=>({seat:Number(seat),...v}));
+  const normal=entries.filter(x=>x.action!=='START').sort((a,b)=>a.seat-b.seat);
+  const starts=entries.filter(x=>x.action==='START').sort((a,b)=>a.seat-b.seat);
+  hostState.logs.push(`<span class="warn">[TURN ${hostState.turn}]</span> 4名の操作を同時受理。`);
+  for(const e of normal){
+    const d=applyCore(e.action);hostState.logs.push(`SEAT ${e.seat+1} / ${esc(e.name)} → <b>${e.action}</b> <span class="delta">${d}</span>`);
+    if(checkFailure())break;
+  }
+  if(hostState.phase==='playing'&&starts.length){
+    for(const e of starts){
+      if(inTarget(hostState.machine)){hostState.logs.push(`<span class="good">${esc(e.name)} が START を実行。起動条件一致。</span>`);endGame(true,'内部法則を読み解き、UNKNOWN MACHINEの起動に成功しました。');break;}
+      hostState.machine.stability=clamp(hostState.machine.stability-10);hostState.machine.pressure=clamp(hostState.machine.pressure+8,-20,120);
+      hostState.logs.push(`${esc(e.name)} → <b>START</b> <span class="dangerText">条件不一致 / STB -10 / PRS +8</span>`);
+      if(checkFailure())break;
+    }
+  }
+  if(hostState.phase!=='playing'){hostState.pending={};broadcastState();return;}
+  hostState.pending={};hostState.turn+=1;
+  if(hostState.turn>hostState.maxTurns){endGame(false,'制限ターン内に起動条件を完成できませんでした。');hostState.turn=hostState.maxTurns;}
+  broadcastState();
+}
+function endGame(win,reason){hostState.phase=win?'win':'lose';hostState.resultReason=reason;hostState.logs.push(win?`<span class="good">[SUCCESS] MACHINE ONLINE</span>`:`<span class="dangerText">[FAIL] ${esc(reason)}</span>`);}
+
+window.addEventListener('beforeunload',()=>{if(isHost&&channel)send('host_left',{});});
+$('#codeInput').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6));
+</script>
+</body>
+</html>
